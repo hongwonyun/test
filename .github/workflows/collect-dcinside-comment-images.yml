@@ -15,7 +15,7 @@ permissions:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
       - name: Check out temporary branch
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
       - name: Collect comment images
         id: collect
         continue-on-error: true
-        run: python .github/scripts/collect_dcinside_comment_images.py
+        run: python .github/scripts/collect_dcinside_fast.py
 
       - name: Upload collected ZIP and diagnostics
         if: always()
@@ -40,7 +40,7 @@ jobs:
           name: rescene1-352852-comment-images
           path: |
             out/**
-            work/debug/**
+            fast_work/**
           if-no-files-found: error
           retention-days: 1
 
