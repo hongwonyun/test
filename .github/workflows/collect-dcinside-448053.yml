@@ -1,4 +1,4 @@
-name: Collect DCInside 448053 comment images
+name: Collect DCInside 448053 post images
 
 on:
   pull_request:
@@ -25,37 +25,22 @@ jobs:
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
 
-      - name: Prepare verified collector for post 448053
-        run: |
-          curl --fail --location --silent --show-error \
-            https://raw.githubusercontent.com/hongwonyun/test/08cb28fac6590be86c7eca0957c0c54a7e94ef03/.github/scripts/collect_dcinside_fast.py \
-            --output /tmp/collect_dcinside_fast.py
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('/tmp/collect_dcinside_fast.py')
-          text = path.read_text(encoding='utf-8')
-          old = 'POST_NO = "352852"'
-          new = 'POST_NO = "448053"'
-          if old not in text:
-              raise SystemExit('POST_NO marker not found in verified collector')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
-          PY
-          python -m py_compile /tmp/collect_dcinside_fast.py
+      - name: Validate collector
+        run: python -m py_compile .github/scripts/collect_dcinside_post_448053.py
 
-      - name: Collect all comment images
+      - name: Collect post images
         id: collect
         continue-on-error: true
-        run: python /tmp/collect_dcinside_fast.py
+        run: python .github/scripts/collect_dcinside_post_448053.py
 
       - name: Upload image ZIP
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rescene1-448053-all-comment-images
+          name: rescene1-448053-post-images
           path: |
             out/**
-            fast_work/**
-            debug_work/**
+            collection/**
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
